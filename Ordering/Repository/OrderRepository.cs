@@ -17,10 +17,10 @@ namespace Ordering.Repository
 
         public async Task<Order> Find(int orderId)
         {
+            _context.AttachRange(JobStatus.List());
             var entity = await _context.Orders
                 .Where(o => o.Id == orderId)
                 .Include(o => o.Jobs)
-                .ThenInclude(j => j.JobStatus)
                 .FirstOrDefaultAsync();
 
             return entity;
@@ -28,6 +28,7 @@ namespace Ordering.Repository
 
         public async Task Complete()
         {
+            _context.ChangeTracker.DetectChanges();
             await _context.SaveChangesAsync(true);
         }
     }
